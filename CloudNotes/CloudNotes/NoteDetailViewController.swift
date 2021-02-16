@@ -46,7 +46,17 @@ class NoteDetailViewController: UIViewController {
         super.viewDidLoad()
         setupToViewMode()
         guard let note = model else { return }
-        noteTextView.text = note.body
+        noteTextView.text = applyTextStyle(note.title, note.body)
+    }
+    
+    private func applyTextStyle(_ title: String, _ body: String) -> String {
+        let resultString = NSMutableAttributedString()
+        let titleString = NSAttributedString(string: "\(title)\n", attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20)])
+        let bodyString = NSAttributedString(string: body, attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20)])
+
+        resultString.append(titleString)
+        resultString.append(bodyString)
+        return resultString.string
     }
     
     private func setupToViewMode() {

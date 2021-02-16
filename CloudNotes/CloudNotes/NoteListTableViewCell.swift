@@ -21,7 +21,19 @@ class NoteListTableViewCell: UITableViewCell {
     private func updateUI() {
         guard let note = model else { return }
         titleLabel.text = note.title
-        updatedAtLabel.text = "\(note.lastModified)"
+        updatedAtLabel.text = note.lastModified.formattedStringDate
         previewLabel.text = note.body
+    }
+}
+
+extension Int {
+    var formattedStringDate: String {
+        let date = Date(timeIntervalSince1970: TimeInterval(self))
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "YYYY.MM.dd"
+        dateFormatter.locale = .autoupdatingCurrent
+        dateFormatter.timeZone = .autoupdatingCurrent
+        return dateFormatter.string(from: date)
     }
 }
