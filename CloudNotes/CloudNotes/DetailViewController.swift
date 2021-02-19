@@ -16,6 +16,10 @@ final class DetailViewController: UIViewController {
     
     private var memoBodyTextView: UITextView = {
         let textView = UITextView()
+//        let contentHeight = textView.contentSize.height
+//        let offSet = textView.contentOffset.x
+//        let contentOffSet = contentHeight - offSet
+//        textView.contentOffset = CGPoint(x: 0, y: -contentOffSet)
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.dataDetectorTypes = [.link, .phoneNumber, .calendarEvent]
         textView.isSelectable = true
@@ -29,7 +33,6 @@ final class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTextView()
-        setUpDefaultMemo()
         setupNavigationBar()
     }
     
@@ -38,13 +41,8 @@ final class DetailViewController: UIViewController {
         setupNavigationBar()
     }
     
-    private func setUpDefaultMemo() {
-        let index =  UserDefaults.standard.integer(forKey: "lastMemoIndex")
-        memo = MemoData.shared.list[index]
-    }
-    
     private func setupNavigationBar() {
-        if traitCollection.userInterfaceIdiom == .pad &&
+        if traitCollection.horizontalSizeClass == .regular &&
             UIDevice.current.orientation.isLandscape {
             navigationController?.navigationBar.isHidden = true
         }
@@ -55,11 +53,12 @@ final class DetailViewController: UIViewController {
     
     private func setupTextView() {
         setTapGesture()
+        self.view.backgroundColor = .white
         view.addSubview(memoBodyTextView)
         NSLayoutConstraint.activate([
             memoBodyTextView.topAnchor.constraint(equalTo: view.topAnchor),
             memoBodyTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            memoBodyTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            memoBodyTextView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             memoBodyTextView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
