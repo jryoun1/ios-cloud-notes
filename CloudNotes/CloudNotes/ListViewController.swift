@@ -17,6 +17,7 @@ final class ListViewController: UITableViewController {
         super.viewDidLoad()
         self.tableView.register(MemoTableViewCell.self, forCellReuseIdentifier: "MemoTableViewCell")
         decodeMemoData()
+        setUpDefaultMemo()
         setUpNavigationBar()
     }
     
@@ -26,7 +27,6 @@ final class ListViewController: UITableViewController {
         }
         do {
             MemoData.shared.list = try JSONDecoder().decode([Memo].self, from: dataAsset.data)
-            setUpDefaultMemo()
         } catch {
             print(error)
         }

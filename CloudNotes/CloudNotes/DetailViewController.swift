@@ -14,13 +14,8 @@ final class DetailViewController: UIViewController {
         }
     }
     
-    private var memoBodyTextView: UITextView = {
-        let textView = UITextView()
-//        let contentHeight = textView.contentSize.height
-//        let offSet = textView.contentOffset.x
-//        let contentOffSet = contentHeight - offSet
-//        textView.contentOffset = CGPoint(x: 0, y: -contentOffSet)
-        textView.translatesAutoresizingMaskIntoConstraints = false
+    private var memoBodyTextView: MemoTextView = {
+        let textView = MemoTextView()
         textView.dataDetectorTypes = [.link, .phoneNumber, .calendarEvent]
         textView.isSelectable = true
         textView.isEditable = false
@@ -32,16 +27,17 @@ final class DetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupTextView()
-        setupNavigationBar()
+        view.backgroundColor = .white
+        setUpTextView()
+        setUpNavigationBar()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        setupNavigationBar()
+        setUpNavigationBar()
     }
     
-    private func setupNavigationBar() {
+    private func setUpNavigationBar() {
         if traitCollection.horizontalSizeClass == .regular &&
             UIDevice.current.orientation.isLandscape {
             navigationController?.navigationBar.isHidden = true
@@ -51,21 +47,16 @@ final class DetailViewController: UIViewController {
         }
     }
     
-    private func setupTextView() {
-        setTapGesture()
-        self.view.backgroundColor = .white
+    private func setUpTextView() {
+        memoBodyTextView.delegate = self
         view.addSubview(memoBodyTextView)
+        memoBodyTextView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             memoBodyTextView.topAnchor.constraint(equalTo: view.topAnchor),
             memoBodyTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             memoBodyTextView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             memoBodyTextView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
-    }
-    
-    private func setTapGesture() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapTextView(_:)))
-        memoBodyTextView.addGestureRecognizer(tapGesture)
     }
     
     private func refreshUI() {
@@ -76,24 +67,17 @@ final class DetailViewController: UIViewController {
         let title = memo.title
         let fontAttributeKey = NSAttributedString.Key(rawValue: kCTFontAttributeName as String)
         let fontSize = UIFont.preferredFont(forTextStyle: .title1)
-        let content = NSMutableAttributedString(string: "\(memo.title)\n\n\(memo.body)")
+        let content = NSMutableAttributedString(string: "\(memo.title)\n\n\(memo.body)\n010-1234-1234\nwww.naver.com\n2021.03.09\n")
         content.addAttribute(fontAttributeKey, value: fontSize, range: NSMakeRange(0, title.count))
         memoBodyTextView.attributedText = content
     }
 }
 
-//MARK: extension UITextViewDelegate
+//MARK: - extension UITextViewDelegate
 extension DetailViewController: UITextViewDelegate {
     func textViewDidEndEditing(_ textView: UITextView) {
         textView.isEditable = false
         textView.dataDetectorTypes = [.link, .phoneNumber, .calendarEvent]
-        textView.resignFirstResponder()
-    }
-    
-    @objc private func tapTextView(_ gesture: UITapGestureRecognizer) {
-        memoBodyTextView.isEditable = true
-        memoBodyTextView.dataDetectorTypes = []
-        memoBodyTextView.becomeFirstResponder()
     }
 }
 
