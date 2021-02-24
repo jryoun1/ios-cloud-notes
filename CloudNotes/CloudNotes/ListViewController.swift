@@ -17,6 +17,7 @@ final class ListViewController: UITableViewController {
         super.viewDidLoad()
         self.tableView.register(MemoTableViewCell.self, forCellReuseIdentifier: "MemoTableViewCell")
         decodeMemoData()
+        setUpDefaultMemo()
         setUpNavigationBar()
     }
     
@@ -33,7 +34,7 @@ final class ListViewController: UITableViewController {
     }
     
     private func setUpDefaultMemo() {
-        let index =  UserDefaults.standard.integer(forKey: "lastMemoIndex")
+        let index = UserDefaults.standard.integer(forKey: "lastMemoIndex")
         delegate?.memoSelected(MemoData.shared.list[index])
     }
     
