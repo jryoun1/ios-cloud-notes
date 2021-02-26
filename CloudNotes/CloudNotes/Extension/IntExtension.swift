@@ -7,8 +7,8 @@
 
 import Foundation
 
-extension Int {
+extension Date {
     var stringFromUTC: String? {
-        return CustomDateFormatter.utcFormatter.string(from: Date(timeIntervalSince1970: Double(self)))
+        return CustomDateFormatter.utcFormatter.string(from: self)
     }
 }

@@ -6,12 +6,19 @@
 //
 
 import UIKit
+import CoreData
 
 final class DetailViewController: UIViewController {
     private var memo: Memo? {
         didSet {
+            print("didSet")
+            saveMemo()
             refreshUI()
             memoBodyTextView.isEditable = false
+        }
+        willSet {
+            print("willSet")
+            saveMemo()
         }
     }
     
@@ -22,9 +29,13 @@ final class DetailViewController: UIViewController {
         textView.isEditable = false
         return textView
     }()
+    private var managedContext: NSManagedObjectContext!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let appDelegate =
+            UIApplication.shared.delegate as? AppDelegate
+        managedContext = appDelegate?.persistentContainer.viewContext
         view.backgroundColor = .white
         setupTextView()
         setupNavigationBar()
@@ -94,15 +105,33 @@ final class DetailViewController: UIViewController {
     
     private func refreshUI() {
         loadViewIfNeeded()
-        guard let memo = memo else {
+        guard let memo = memo,
+              let title = memo.title,
+              let body = memo.body else {
             return
         }
-        let content = NSMutableAttributedString(string: memo.title, attributes: [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .title1)])
-        content.append(NSAttributedString(string: "\n\n" + memo.body, attributes: [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body)]))
+        
+        let content = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .title1)])
+        content.append(NSAttributedString(string: "\n\n" + body, attributes: [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body)]))
 
         memoBodyTextView.attributedText = content
     }
     
+    private func saveMemo() {
+        guard let memo = memo else {
+            return
+        }
+        memo.title = "제목"
+        memo.body = "내용"
+        memo.modifiedDate = Date()
+        
+        do {
+            print("저장!!! \(managedContext.hasChanges)")
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Failed saving \(error), \(error.userInfo)")
+        }
+    }
     
     private func setupKeyboardDoneButton() {
         let toolBarKeyboard = UIToolbar()
@@ -124,6 +153,7 @@ extension DetailViewController: UITextViewDelegate {
     func textViewDidEndEditing(_ textView: UITextView) {
         textView.isEditable = false
         textView.dataDetectorTypes = [.link, .phoneNumber, .calendarEvent]
+        saveMemo()
     }
 }
 
